@@ -12,7 +12,6 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: http://localhost:3001
         VITE_APP_TOKEN: ${APP_TOKEN}
     ports:
       - "5173:80"

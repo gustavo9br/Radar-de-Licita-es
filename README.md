@@ -56,7 +56,8 @@ O casamento entre a descrição livre do edital e o catálogo CATMAT é feito em
 ## Autenticação e segurança
 
 - PNCP e Compras.gov.br: consulta pública, sem token.
-- Airtable: Personal Access Token guardado só no backend (variável de ambiente); o frontend nunca fala diretamente com o Airtable nem com as APIs de governo, sempre através do nosso backend (evita CORS, esconde credenciais, permite tratar erros de forma uniforme).
+- Airtable: Personal Access Token guardado só no backend (variável de ambiente); o frontend nunca fala diretamente com o Airtable nem com as APIs de governo, sempre através do nosso backend (esconde credenciais, permite tratar erros de forma uniforme).
+- Frontend e backend ficam no mesmo domínio em produção (o Traefik roteia `/api` pro backend e o resto pro frontend — veja `docker-compose.prod.yml`), e em dev o Vite proxya `/api` pro backend (`vite.config.ts`). O frontend nunca precisa saber a URL do backend, só caminhos relativos — a mesma imagem do frontend funciona em qualquer domínio, sem rebuild.
 - O disparo do pipeline (`POST /api/pipeline/iniciar`) exige um header `X-App-Token`. Como o frontend é uma SPA pública, esse token embutido no bundle é uma barreira básica contra abuso automatizado, não uma autenticação forte de usuário — isso está documentado explicitamente na parte teórica.
 
 ## Estrutura do repositório
@@ -69,7 +70,8 @@ radar-licitacoes/
   docs/
     parte-teorica.md   Entregável 1 (parte teórica) do trabalho
     roteiro-video.md   Roteiro do vídeo pitch
-  docker-compose.dev.yml
+  docker-compose.dev.yml     roda backend+frontend juntos localmente (containers)
+  docker-compose.prod.yml    stack de produção (Traefik + Docker Swarm) — local, não versionado (contém segredos)
   .github/workflows/deploy.yml   build + push das imagens pro GHCR a cada push em main
 ```
 
@@ -88,7 +90,7 @@ Gere um Personal Access Token em [airtable.com/create/tokens](https://airtable.c
 
 ## Como rodar localmente
 
-**Pré-requisitos**: Node.js 20+, uma base Airtable configurada (acima).
+**Pré-requisitos**: Node.js 20+, uma base Airtable configurada (acima). Em dev, o Vite já proxya `/api` pro backend (`vite.config.ts`) — não precisa configurar URL nenhuma no frontend além do token.
 
 1. Backend:
    ```
@@ -110,7 +112,17 @@ Alternativa via Docker: `cp .env.example .env` na raiz (mesmo valor do `APP_TOKE
 
 ## Deploy em produção
 
-Build e publicação das imagens (backend/frontend) no GHCR a cada push em `main`, via GitHub Actions. O deploy em si é feito manualmente numa stack Docker Swarm (Portainer), atrás do Traefik já existente na VPS.
+Domínio: **https://radar-licitacoes.gustavomartins.dev**. Mesmo padrão do [omni-ai](../../IA%20Generativa%20Aplicada%20ao%20Desenvolvimento%20Junho/omni-ai): a cada push em `main`, o GitHub Actions builda e publica as imagens de backend/frontend no GHCR (`ghcr.io/gustavo9br/radar-licitacoes-backend`/`-frontend`). O deploy em si é manual, numa stack Docker Swarm (Portainer), atrás do Traefik já existente na VPS — front e back no **mesmo domínio**, com o Traefik roteando por path: `/api` vai pro backend, o resto vai pro frontend (prioridade mais alta na regra do backend pra ela ganhar do catch-all do frontend). Isso evita CORS entre os dois e deixa a imagem do frontend independente de domínio.
+
+> `docker-compose.prod.yml` contém valores reais (token do Airtable, `APP_TOKEN`) e por isso está no `.gitignore` — não é versionado no repositório. O que fica documentado aqui é a arquitetura pra recriar o deploy, não o arquivo literal.
+
+**1. Pacotes do GHCR nascem privados** mesmo com o repo público — em GitHub → seu perfil → Packages → `radar-licitacoes-backend`/`radar-licitacoes-frontend` → Package settings → Change visibility (ou cadastre uma credencial do GHCR em Portainer → Registries).
+
+**2. Criar a stack no Portainer** com o conteúdo de `docker-compose.prod.yml`, na mesma rede Docker externa (`externa`) do Traefik já existente na VPS.
+
+**3. Depois do primeiro deploy**, apontar o DNS de `radar-licitacoes.gustavomartins.dev` pra VPS (se ainda não apontar) e aguardar o Traefik emitir o certificado via Let's Encrypt.
+
+**4. Atualizar depois de um novo push**: no Portainer, "Update the stack" com re-pull da imagem (tags são `:latest`).
 
 > Link da aplicação publicada: _a definir após o primeiro deploy._
 

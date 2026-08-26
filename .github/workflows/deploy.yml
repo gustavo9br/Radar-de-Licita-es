@@ -33,8 +33,9 @@ jobs:
           context: ./${{ matrix.service }}
           push: true
           tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/radar-licitacoes-${{ matrix.service }}:latest
-          # Só usados pelo build do frontend (VITE_API_URL/VITE_APP_TOKEN ficam
-          # embutidos no bundle estático); o backend ignora esses build-args.
+          # Só usado pelo build do frontend (VITE_APP_TOKEN fica embutido no bundle
+          # estático); o backend ignora esse build-arg. Front e back ficam no mesmo
+          # domínio em produção (Traefik roteia /api pro backend), então não precisa
+          # de VITE_API_URL — a imagem do frontend funciona em qualquer domínio.
           build-args: |
-            VITE_API_URL=${{ vars.VITE_API_URL }}
             VITE_APP_TOKEN=${{ secrets.APP_TOKEN }}

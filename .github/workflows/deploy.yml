@@ -1,0 +1,40 @@
+name: Build & Publish Images
+
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        service: [backend, frontend]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push ${{ matrix.service }}
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.service }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/radar-licitacoes-${{ matrix.service }}:latest
+          # Só usados pelo build do frontend (VITE_API_URL/VITE_APP_TOKEN ficam
+          # embutidos no bundle estático); o backend ignora esses build-args.
+          build-args: |
+            VITE_API_URL=${{ vars.VITE_API_URL }}
+            VITE_APP_TOKEN=${{ secrets.APP_TOKEN }}

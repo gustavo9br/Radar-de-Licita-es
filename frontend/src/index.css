@@ -1,0 +1,364 @@
+:root {
+  --bg: #0e1016;
+  --bg-panel: #151824;
+  --bg-card: #1b1f2e;
+  --border: #2a2f42;
+  --text: #e7e9f2;
+  --text-dim: #8b91a8;
+  --accent: #7c5cff;
+  --accent-dim: #4c3b99;
+  --success: #22c55e;
+  --error: #ef4444;
+  --running: #f5a623;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+.app__header h1 {
+  margin: 0 0 4px;
+  font-size: 1.8rem;
+  background: linear-gradient(90deg, var(--accent), #22d3c7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.app__header p {
+  margin: 0 0 28px;
+  color: var(--text-dim);
+}
+
+.secao {
+  margin: 28px 0;
+}
+
+.secao h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+  color: var(--text);
+}
+
+/* ---------- formulário de busca ---------- */
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.search-form__termo {
+  flex: 1 1 320px;
+}
+
+.search-form input,
+.search-form select,
+.painel-resultados select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 0.95rem;
+}
+
+.search-form button,
+.tabela-itens button,
+.botao-excluir {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.search-form button:disabled,
+.tabela-itens button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.search-form button:hover:not(:disabled),
+.tabela-itens button:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.mensagem-erro {
+  color: var(--error);
+  margin-top: 10px;
+}
+
+.texto-vazio {
+  color: var(--text-dim);
+}
+
+/* ---------- lista de editais ---------- */
+
+.lista-editais {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-edital {
+  text-align: left;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.card-edital:hover {
+  border-color: var(--accent-dim);
+}
+
+.card-edital--selecionado {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.card-edital__titulo {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.card-edital__descricao {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.card-edital__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+/* ---------- tabela de itens do edital ---------- */
+
+.tabela-itens,
+.tabela-registros {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-itens th,
+.tabela-itens td,
+.tabela-registros th,
+.tabela-registros td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.tabela-itens__descricao,
+.tabela-registros__descricao {
+  max-width: 420px;
+}
+
+.tabela-registros__descricao a {
+  color: var(--text);
+}
+
+/* ---------- pipeline canvas ---------- */
+
+.pipeline-canvas {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 0;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+
+.pipeline-no-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.pipeline-no {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 220px;
+  min-height: 76px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.pipeline-no__icone {
+  font-size: 1.3rem;
+}
+
+.pipeline-no__corpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.pipeline-no__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.pipeline-no__mensagem {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.pipeline-no--running {
+  border-color: var(--running);
+  box-shadow: 0 0 12px -2px var(--running);
+}
+
+.pipeline-no--success {
+  border-color: var(--success);
+}
+
+.pipeline-no--error {
+  border-color: var(--error);
+  box-shadow: 0 0 12px -2px var(--error);
+}
+
+.pipeline-conector {
+  width: 26px;
+  height: 2px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.pipeline-conector--ativo {
+  background: var(--success);
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--running);
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.check {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.cross {
+  color: var(--error);
+  font-weight: 700;
+}
+
+/* ---------- painel de resultados ---------- */
+
+.painel-resultados {
+  margin-top: 40px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+
+.painel-resultados__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.filtro-alerta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+.tabela-scroll {
+  overflow-x: auto;
+}
+
+.amostras {
+  color: var(--text-dim);
+  font-size: 0.8em;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge--alerta_sobrepreco {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.badge--dentro_da_media {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.badge--abaixo_da_media {
+  background: rgba(124, 92, 255, 0.15);
+  color: #a795ff;
+}
+
+.badge--sem_dados {
+  background: rgba(139, 145, 168, 0.15);
+  color: var(--text-dim);
+}
+
+.botao-excluir {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.botao-excluir:hover {
+  border-color: var(--error);
+  color: var(--error);
+}

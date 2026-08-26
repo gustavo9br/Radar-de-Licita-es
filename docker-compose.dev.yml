@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/.env
+    environment:
+      - FRONTEND_ORIGIN=http://localhost:5173
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3001
+        VITE_APP_TOKEN: ${APP_TOKEN}
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend

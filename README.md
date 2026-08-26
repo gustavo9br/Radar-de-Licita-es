@@ -69,7 +69,6 @@ radar-licitacoes/
   frontend/    React + Vite + TypeScript: formulário de busca, canvas do pipeline, tabela de resultados
   docs/
     parte-teorica.md   Entregável 1 (parte teórica) do trabalho
-    roteiro-video.md   Roteiro do vídeo pitch
   docker-compose.dev.yml     roda backend+frontend juntos localmente (containers)
   docker-compose.prod.yml    stack de produção (Traefik + Docker Swarm) — local, não versionado (contém segredos)
   .github/workflows/deploy.yml   build + push das imagens pro GHCR a cada push em main
@@ -124,7 +123,7 @@ Domínio: **https://radar-licitacoes.gustavomartins.dev**. Mesmo padrão do [omn
 
 **4. Atualizar depois de um novo push**: no Portainer, "Update the stack" com re-pull da imagem (tags são `:latest`).
 
-> Link da aplicação publicada: _a definir após o primeiro deploy._
+> Link da aplicação publicada: **https://radar-licitacoes.gustavomartins.dev**
 
 ## Prints da aplicação
 
